@@ -1,0 +1,3022 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AETHER SMP | Minecraft Network</title>
+
+<meta name="description"
+content="AETHER SMP — Premium Java + Bedrock Minecraft Network. Survival, Lifesteal, PvP, OneBlock and Mini Games.">
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+/* =========================================================
+   AETHER SMP — PREMIUM SINGLE PAGE WEBSITE
+========================================================= */
+
+:root{
+    --bg:#05070b;
+    --bg2:#080c12;
+    --card:rgba(255,255,255,.045);
+    --card2:rgba(255,255,255,.025);
+    --border:rgba(255,255,255,.085);
+    --text:#f5f8fb;
+    --muted:#8a95a7;
+    --green:#00e5a0;
+    --cyan:#00b7ff;
+    --purple:#6c63ff;
+    --discord:#5865f2;
+    --danger:#ff5570;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    min-height:100vh;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Inter,Arial,Helvetica,sans-serif;
+    overflow-x:hidden;
+}
+
+button,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+a{
+    color:inherit;
+    text-decoration:none;
+}
+
+/* =========================================================
+   BACKGROUND
+========================================================= */
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    background:
+        radial-gradient(circle at 12% 18%,rgba(0,229,160,.10),transparent 27%),
+        radial-gradient(circle at 87% 20%,rgba(108,99,255,.11),transparent 28%),
+        radial-gradient(circle at 50% 90%,rgba(0,183,255,.07),transparent 30%),
+        var(--bg);
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    opacity:.16;
+    background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),
+        linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:45px 45px;
+    mask-image:linear-gradient(to bottom,#000,transparent 90%);
+}
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar{
+    position:fixed;
+    top:15px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(1190px,calc(100% - 26px));
+    min-height:68px;
+    z-index:1000;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+
+    padding:10px 13px 10px 20px;
+
+    background:rgba(7,10,15,.76);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+
+    border:1px solid var(--border);
+    border-radius:18px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.35),
+        inset 0 1px rgba(255,255,255,.035);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    white-space:nowrap;
+    font-weight:950;
+    letter-spacing:.7px;
+}
+
+.logo-icon{
+    width:38px;
+    height:38px;
+    border-radius:11px;
+    display:grid;
+    place-items:center;
+
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    color:#00130e;
+
+    box-shadow:0 0 30px rgba(0,229,160,.2);
+}
+
+.logo-name{
+    background:linear-gradient(90deg,#fff,#8affdc);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.nav-links{
+    display:flex;
+    align-items:center;
+    gap:4px;
+}
+
+.nav-links a,
+.nav-links button{
+    border:0;
+    background:none;
+    color:#aeb7c6;
+    padding:11px 13px;
+    border-radius:10px;
+    font-size:12px;
+    font-weight:800;
+    transition:.22s;
+}
+
+.nav-links a:hover,
+.nav-links button:hover{
+    color:#fff;
+    background:rgba(255,255,255,.055);
+}
+
+.nav-links .discord-link{
+    background:var(--discord);
+    color:#fff;
+}
+
+.auth-links{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding-left:7px;
+    margin-left:3px;
+    border-left:1px solid rgba(255,255,255,.08);
+}
+
+.auth-signin{
+    color:#aeb7c6!important;
+}
+
+.auth-login{
+    background:linear-gradient(135deg,var(--green),var(--cyan))!important;
+    color:#02120d!important;
+}
+
+.user-pill{
+    display:none;
+    align-items:center;
+    gap:8px;
+    padding:8px 11px;
+    border-radius:11px;
+    background:rgba(0,229,160,.08);
+    border:1px solid rgba(0,229,160,.16);
+    font-size:11px;
+    font-weight:800;
+    color:#8affdc;
+}
+
+.user-pill.visible{
+    display:flex;
+}
+
+.logout-btn{
+    border:0;
+    background:rgba(255,85,112,.1);
+    color:#ff8094;
+    padding:7px 9px;
+    border-radius:8px;
+    font-size:10px;
+}
+
+.menu{
+    display:none;
+    border:0;
+    background:none;
+    color:#fff;
+    font-size:24px;
+}
+
+/* =========================================================
+   PAGE SYSTEM
+========================================================= */
+
+.page{
+    display:none;
+    min-height:100vh;
+    padding-top:105px;
+}
+
+.page.active{
+    display:block;
+    animation:pageIn .32s ease;
+}
+
+@keyframes pageIn{
+    from{
+        opacity:0;
+        transform:translateY(7px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.container{
+    width:min(1150px,calc(100% - 30px));
+    margin:auto;
+}
+
+.section-label{
+    color:#63f7ca;
+    font-size:11px;
+    letter-spacing:3px;
+    font-weight:900;
+    text-transform:uppercase;
+    margin-bottom:12px;
+}
+
+.section-title{
+    font-size:clamp(32px,5vw,54px);
+    line-height:1;
+    letter-spacing:-1.5px;
+    font-weight:950;
+}
+
+.section-description{
+    max-width:700px;
+    margin-top:16px;
+    color:var(--muted);
+    line-height:1.8;
+    font-size:14px;
+}
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.home-hero{
+    min-height:calc(100vh - 105px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:70px 0 100px;
+}
+
+.hero-inner{
+    max-width:920px;
+    margin:auto;
+}
+
+.hero-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:9px 15px;
+    border-radius:999px;
+
+    border:1px solid rgba(0,229,160,.22);
+    background:rgba(0,229,160,.055);
+
+    color:#8affdc;
+    font-size:11px;
+    font-weight:900;
+    letter-spacing:1.5px;
+}
+
+.status-dot{
+    width:7px;
+    height:7px;
+    border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 15px var(--green);
+}
+
+.hero-title{
+    margin-top:27px;
+    font-size:clamp(72px,13vw,150px);
+    line-height:.78;
+    letter-spacing:-8px;
+    font-weight:1000;
+
+    background:linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #dcfff4 47%,
+        #58edc1 100%
+    );
+
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+
+    filter:drop-shadow(0 0 35px rgba(0,229,160,.09));
+}
+
+.hero-title small{
+    display:block;
+    margin-top:19px;
+
+    font-size:clamp(18px,3vw,35px);
+    letter-spacing:8px;
+
+    background:linear-gradient(90deg,var(--green),var(--cyan));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.hero-description{
+    max-width:710px;
+    margin:29px auto 0;
+    color:#919bad;
+    font-size:15px;
+    line-height:1.9;
+}
+
+.hero-tagline{
+    margin-top:21px;
+    color:#dce5ed;
+    font-size:11px;
+    font-weight:950;
+    letter-spacing:4px;
+}
+
+.hero-buttons{
+    margin-top:31px;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.btn{
+    min-height:45px;
+    border:0;
+    border-radius:11px;
+    padding:0 18px;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    font-size:12px;
+    font-weight:900;
+
+    transition:.22s;
+}
+
+.btn:hover{
+    transform:translateY(-3px);
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    color:#02120d;
+    box-shadow:0 12px 35px rgba(0,229,160,.15);
+}
+
+.btn-secondary{
+    color:#fff;
+    background:rgba(255,255,255,.045);
+    border:1px solid var(--border);
+}
+
+.btn-discord{
+    color:#fff;
+    background:var(--discord);
+}
+
+.stats{
+    margin-top:65px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+
+    border:1px solid var(--border);
+    border-radius:17px;
+    overflow:hidden;
+    background:rgba(255,255,255,.025);
+}
+
+.stat{
+    padding:21px 12px;
+    border-right:1px solid rgba(255,255,255,.06);
+}
+
+.stat:last-child{
+    border-right:0;
+}
+
+.stat strong{
+    display:block;
+    font-size:13px;
+    margin-bottom:6px;
+}
+
+.stat span{
+    color:#687486;
+    font-size:10px;
+}
+
+/* =========================================================
+   HOME CARDS
+========================================================= */
+
+.home-section{
+    padding:40px 0 100px;
+}
+
+.access-grid{
+    margin-top:35px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:17px;
+}
+
+.card{
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.05),
+        rgba(255,255,255,.018)
+    );
+}
+
+.ip-card{
+    padding:24px;
+}
+
+.card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.card-title{
+    font-size:14px;
+    font-weight:900;
+}
+
+.card-label{
+    color:#667284;
+    font-size:9px;
+    letter-spacing:1.3px;
+    text-transform:uppercase;
+}
+
+.ip{
+    padding:14px;
+    border-radius:10px;
+    background:rgba(0,0,0,.25);
+    color:#8affdc;
+    font-family:monospace;
+    font-size:13px;
+    margin-bottom:12px;
+    overflow:auto;
+}
+
+.ip-card .btn{
+    width:100%;
+}
+
+.features-grid{
+    margin-top:35px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:15px;
+}
+
+.feature{
+    min-height:180px;
+    padding:24px;
+    transition:.25s;
+}
+
+.feature:hover{
+    transform:translateY(-5px);
+    border-color:rgba(0,229,160,.22);
+    background:rgba(0,229,160,.03);
+}
+
+.feature-icon{
+    font-size:25px;
+    margin-bottom:25px;
+}
+
+.feature h3{
+    font-size:14px;
+    margin-bottom:9px;
+}
+
+.feature p{
+    color:#7c8799;
+    font-size:11px;
+    line-height:1.75;
+}
+
+/* =========================================================
+   EXPLORE
+========================================================= */
+
+.page-header{
+    padding:70px 0 40px;
+}
+
+.back-home{
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    color:#788397;
+    font-size:11px;
+    font-weight:800;
+    margin-bottom:30px;
+}
+
+.back-home:hover{
+    color:#fff;
+}
+
+.modes{
+    padding-bottom:100px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.mode{
+    overflow:hidden;
+    border:1px solid var(--border);
+    border-radius:17px;
+    background:rgba(255,255,255,.025);
+    transition:.25s;
+}
+
+.mode.active{
+    border-color:rgba(0,229,160,.23);
+    background:rgba(0,229,160,.022);
+}
+
+.mode-button{
+    width:100%;
+    border:0;
+    background:none;
+    color:#fff;
+
+    padding:20px 22px;
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+    text-align:left;
+}
+
+.mode-icon{
+    width:45px;
+    height:45px;
+    flex:none;
+
+    display:grid;
+    place-items:center;
+
+    border-radius:12px;
+    background:rgba(255,255,255,.06);
+    font-size:21px;
+}
+
+.mode-info{
+    flex:1;
+}
+
+.mode-info strong{
+    display:block;
+    font-size:15px;
+    margin-bottom:5px;
+}
+
+.mode-info span{
+    color:#707b8e;
+    font-size:10px;
+}
+
+.mode-arrow{
+    color:#6e7a8d;
+    transition:.25s;
+}
+
+.mode.active .mode-arrow{
+    transform:rotate(180deg);
+    color:var(--green);
+}
+
+.mode-content{
+    display:none;
+    padding:0 23px 25px 82px;
+}
+
+.mode.active .mode-content{
+    display:block;
+    animation:fadeDown .25s ease;
+}
+
+@keyframes fadeDown{
+    from{
+        opacity:0;
+        transform:translateY(-5px);
+    }
+    to{
+        opacity:1;
+        transform:none;
+    }
+}
+
+.detail-grid{
+    display:grid;
+    grid-template-columns:1.25fr 1fr 1fr;
+    gap:24px;
+}
+
+.detail h4{
+    color:#63f7ca;
+    font-size:10px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-bottom:11px;
+}
+
+.detail p{
+    color:#8792a5;
+    font-size:11px;
+    line-height:1.8;
+}
+
+.detail ul{
+    list-style:none;
+}
+
+.detail li{
+    color:#9ca6b6;
+    font-size:11px;
+    padding:4px 0;
+}
+
+.detail li::before{
+    content:"✓";
+    color:var(--green);
+    margin-right:8px;
+}
+
+.server-info{
+    margin-top:22px;
+    padding:20px;
+    border:1px solid var(--border);
+    border-radius:15px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:20px;
+
+    background:rgba(255,255,255,.025);
+}
+
+.server-info-item small{
+    display:block;
+    color:#626d7e;
+    font-size:9px;
+    letter-spacing:1px;
+    margin-bottom:6px;
+}
+
+.server-info-item code{
+    color:#8affdc;
+    font-family:monospace;
+    font-size:12px;
+}
+
+/* =========================================================
+   STORE
+========================================================= */
+
+.store-head{
+    text-align:center;
+    max-width:720px;
+    margin:0 auto 45px;
+}
+
+.store-head .section-description{
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.store-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:17px;
+    padding-bottom:100px;
+}
+
+.rank{
+    position:relative;
+    overflow:hidden;
+    padding:28px 24px;
+
+    border:1px solid var(--border);
+    border-radius:20px;
+
+    background:linear-gradient(
+        145deg,
+        rgba(255,255,255,.05),
+        rgba(255,255,255,.017)
+    );
+}
+
+.rank.popular{
+    border-color:rgba(0,229,160,.35);
+    box-shadow:0 0 45px rgba(0,229,160,.07);
+    transform:translateY(-7px);
+}
+
+.popular-tag{
+    position:absolute;
+    top:0;
+    right:0;
+    padding:8px 13px;
+    border-radius:0 0 0 12px;
+    background:var(--green);
+    color:#00140e;
+    font-size:8px;
+    font-weight:1000;
+    letter-spacing:1px;
+}
+
+.rank-name{
+    font-size:21px;
+    font-weight:950;
+}
+
+.rank-tier{
+    margin-top:5px;
+    color:#697486;
+    font-size:9px;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+}
+
+.price{
+    margin:22px 0;
+    font-size:33px;
+    font-weight:1000;
+}
+
+.price span{
+    color:#667183;
+    font-size:10px;
+    font-weight:600;
+}
+
+.perks{
+    list-style:none;
+    padding-top:15px;
+    border-top:1px solid rgba(255,255,255,.07);
+}
+
+.perks li{
+    color:#98a3b3;
+    font-size:10.5px;
+    line-height:1.65;
+    padding:6px 0;
+    border-bottom:1px solid rgba(255,255,255,.03);
+}
+
+.perks li::before{
+    content:"✓";
+    color:var(--green);
+    margin-right:8px;
+}
+
+.commands{
+    margin-top:17px;
+    padding-top:15px;
+    border-top:1px solid rgba(255,255,255,.07);
+}
+
+.commands-title{
+    color:#63f7ca;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    margin-bottom:8px;
+}
+
+.command-list{
+    color:#788497;
+    font-family:monospace;
+    font-size:9px;
+    line-height:1.8;
+}
+
+.buy{
+    width:100%;
+    margin-top:20px;
+}
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+.auth-page{
+    min-height:calc(100vh - 105px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:55px 0 100px;
+}
+
+.auth-box{
+    width:min(450px,100%);
+    padding:32px;
+
+    border:1px solid var(--border);
+    border-radius:22px;
+
+    background:
+        radial-gradient(circle at 50% 0%,rgba(0,229,160,.08),transparent 48%),
+        rgba(255,255,255,.035);
+
+    box-shadow:0 25px 80px rgba(0,0,0,.3);
+}
+
+.auth-logo{
+    width:52px;
+    height:52px;
+    margin:0 auto 20px;
+    display:grid;
+    place-items:center;
+    border-radius:15px;
+    background:linear-gradient(135deg,var(--green),var(--cyan));
+    color:#00140e;
+    font-size:23px;
+}
+
+.auth-box h1{
+    text-align:center;
+    font-size:29px;
+    margin-bottom:9px;
+}
+
+.auth-subtitle{
+    text-align:center;
+    color:#7d889a;
+    font-size:11px;
+    line-height:1.7;
+    margin-bottom:25px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    display:block;
+    color:#9ca7b7;
+    font-size:10px;
+    font-weight:800;
+    margin-bottom:7px;
+}
+
+.form-group input{
+    width:100%;
+    height:46px;
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:10px;
+    outline:none;
+
+    background:rgba(0,0,0,.22);
+    color:#fff;
+
+    padding:0 13px;
+    font-size:12px;
+
+    transition:.2s;
+}
+
+.form-group input:focus{
+    border-color:rgba(0,229,160,.45);
+    box-shadow:0 0 0 3px rgba(0,229,160,.06);
+}
+
+.auth-submit{
+    width:100%;
+    margin-top:5px;
+}
+
+.auth-switch{
+    margin-top:19px;
+    text-align:center;
+    color:#697587;
+    font-size:10px;
+}
+
+.auth-switch button{
+    border:0;
+    background:none;
+    color:#63f7ca;
+    font-weight:900;
+}
+
+.auth-note{
+    margin-top:18px;
+    padding:11px;
+    border-radius:10px;
+    background:rgba(255,255,255,.025);
+    color:#687486;
+    font-size:9px;
+    line-height:1.7;
+    text-align:center;
+}
+
+/* =========================================================
+   JOIN CTA
+========================================================= */
+
+.cta{
+    margin-bottom:100px;
+    padding:55px 25px;
+    border-radius:23px;
+    text-align:center;
+
+    border:1px solid rgba(0,229,160,.17);
+
+    background:
+        radial-gradient(circle at 50% 0%,rgba(0,229,160,.12),transparent 55%),
+        rgba(255,255,255,.025);
+}
+
+.cta h2{
+    font-size:clamp(28px,5vw,45px);
+}
+
+.cta p{
+    max-width:600px;
+    margin:13px auto 0;
+    color:#7d889a;
+    font-size:12px;
+    line-height:1.8;
+}
+
+.cta-buttons{
+    margin-top:23px;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer{
+    border-top:1px solid rgba(255,255,255,.06);
+    padding:35px 20px;
+    text-align:center;
+}
+
+.footer-logo{
+    font-size:18px;
+    font-weight:950;
+    margin-bottom:8px;
+}
+
+footer p{
+    color:#667183;
+    font-size:10px;
+    line-height:1.8;
+}
+
+footer strong{
+    color:#9ca7b6;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    z-index:9999;
+
+    transform:translate(-50%,20px);
+
+    padding:12px 17px;
+    border-radius:10px;
+
+    background:#101720;
+    border:1px solid rgba(0,229,160,.25);
+
+    color:#baffed;
+    font-size:11px;
+    font-weight:700;
+
+    opacity:0;
+    pointer-events:none;
+    transition:.25s;
+}
+
+.toast.show{
+    opacity:1;
+    transform:translate(-50%,0);
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:950px){
+
+    .nav-links{
+        position:absolute;
+        top:76px;
+        left:0;
+        right:0;
+
+        display:none;
+        flex-direction:column;
+        align-items:stretch;
+
+        padding:9px;
+
+        background:rgba(7,10,15,.97);
+        border:1px solid var(--border);
+        border-radius:16px;
+    }
+
+    .nav-links.open{
+        display:flex;
+    }
+
+    .nav-links a,
+    .nav-links button{
+        text-align:center;
+    }
+
+    .auth-links{
+        border-left:0;
+        border-top:1px solid rgba(255,255,255,.06);
+        padding:7px 0 0;
+        margin:4px 0 0;
+    }
+
+    .menu{
+        display:block;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .stat:nth-child(2){
+        border-right:0;
+    }
+
+    .stat:nth-child(-n+2){
+        border-bottom:1px solid rgba(255,255,255,.06);
+    }
+
+    .access-grid{
+        grid-template-columns:1fr;
+    }
+
+    .features-grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .store-grid{
+        grid-template-columns:1fr;
+    }
+
+    .rank.popular{
+        transform:none;
+    }
+
+    .detail-grid{
+        grid-template-columns:1fr;
+    }
+
+    .mode-content{
+        padding-left:23px;
+    }
+
+    .server-info{
+        flex-direction:column;
+        align-items:stretch;
+    }
+}
+
+@media(max-width:560px){
+
+    .navbar{
+        top:9px;
+        width:calc(100% - 18px);
+        min-height:61px;
+        padding-left:14px;
+    }
+
+    .logo-name{
+        font-size:14px;
+    }
+
+    .logo-icon{
+        width:34px;
+        height:34px;
+    }
+
+    .page{
+        padding-top:91px;
+    }
+
+    .home-hero{
+        min-height:calc(100vh - 91px);
+        padding-top:55px;
+    }
+
+    .hero-title{
+        font-size:72px;
+        letter-spacing:-5px;
+    }
+
+    .hero-title small{
+        font-size:19px;
+        letter-spacing:5px;
+    }
+
+    .hero-description{
+        font-size:12px;
+    }
+
+    .hero-tagline{
+        font-size:9px;
+        letter-spacing:2px;
+    }
+
+    .hero-buttons .btn{
+        width:100%;
+    }
+
+    .features-grid{
+        grid-template-columns:1fr;
+    }
+
+    .feature{
+        min-height:auto;
+    }
+
+    .mode-button{
+        padding:17px 14px;
+    }
+
+    .mode-content{
+        padding:0 15px 21px;
+    }
+
+    .auth-box{
+        padding:25px 19px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =======================================================
+     NAVBAR
+======================================================= -->
+
+<header class="navbar">
+
+    <a href="#home" class="logo" data-page="home">
+
+        <div class="logo-name">
+            AETHER SMP
+        </div>
+
+    </a>
+
+
+    <nav class="nav-links" id="navLinks">
+
+        <a href="#home" data-page="home">
+            Home
+        </a>
+
+        <a href="#explore" data-page="explore">
+            Explore Server
+        </a>
+
+        <a href="#store" data-page="store">
+            Store
+        </a>
+
+        <a
+            href="https://discord.gg/UguXaBtfP"
+            target="_blank"
+            class="discord-link"
+        >
+            Discord
+        </a>
+
+        <div class="auth-links" id="authLinks">
+
+            <a
+                href="#signin"
+                data-page="signin"
+                class="auth-signin"
+            >
+                Sign In
+            </a>
+
+            <a
+                href="#login"
+                data-page="login"
+                class="auth-login"
+            >
+                Login
+            </a>
+
+        </div>
+
+        <div class="user-pill" id="userPill">
+
+            <span id="userName">
+                Player
+            </span>
+
+            <button
+                class="logout-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </nav>
+
+
+    <button
+        class="menu"
+        onclick="toggleMenu()"
+        aria-label="Menu"
+    >
+        ☰
+    </button>
+
+</header>
+
+
+<!-- =======================================================
+     HOME PAGE
+======================================================= -->
+
+<div class="page active" id="homePage">
+
+    <main>
+
+        <section class="home-hero">
+
+            <div class="container hero-inner">
+
+                <div class="hero-badge">
+                    <span class="status-dot"></span>
+                    JAVA + BEDROCK NETWORK
+                </div>
+
+
+                <h1 class="hero-title">
+                    AETHER
+                    <small>SMP</small>
+                </h1>
+
+
+                <p class="hero-description">
+                    A premium Minecraft network built for survival,
+                    competition, chaos and unforgettable adventures.
+                    Join the community and create your own story.
+                </p>
+
+
+                <div class="hero-tagline">
+                    BUILD • EXPLORE • FIGHT • WIN
+                </div>
+
+
+                <div class="hero-buttons">
+
+                    <a
+                        href="#explore"
+                        data-page="explore"
+                        class="btn btn-primary"
+                    >
+                        Explore Server →
+                    </a>
+
+                    <a
+                        href="https://discord.gg/UguXaBtfP"
+                        target="_blank"
+                        class="btn btn-discord"
+                    >
+                        Join Discord
+                    </a>
+
+                    <button
+                        class="btn btn-secondary"
+                        onclick="copyJavaIP()"
+                    >
+                        Copy Server IP
+                    </button>
+
+                </div>
+
+
+                <div class="stats">
+
+                    <div class="stat">
+                        <strong>Java + Bedrock</strong>
+                        <span>Cross-platform</span>
+                    </div>
+
+                    <div class="stat">
+                        <strong>24/7 Online</strong>
+                        <span>Always available</span>
+                    </div>
+
+                    <div class="stat">
+                        <strong>Low-Lag</strong>
+                        <span>Optimized gameplay</span>
+                    </div>
+
+                    <div class="stat">
+                        <strong>Community Events</strong>
+                        <span>Regular events</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="home-section">
+
+            <div class="container">
+
+                <div class="section-label">
+                    CONNECT
+                </div>
+
+                <h2 class="section-title">
+                    Enter the AETHER.
+                </h2>
+
+                <p class="section-description">
+                    Java and Bedrock players can join the same network.
+                    Choose your edition and start playing.
+                </p>
+
+
+                <div class="access-grid">
+
+                    <div class="card ip-card">
+
+                        <div class="card-top">
+                            <div class="card-title">
+                                ☕ Java Edition
+                            </div>
+
+                            <div class="card-label">
+                                Java
+                            </div>
+                        </div>
+
+                        <div class="ip">
+                            amd-1.orvixcloud.site
+                        </div>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="copyJavaIP()"
+                        >
+                            Copy Java IP
+                        </button>
+
+                    </div>
+
+
+                    <div class="card ip-card">
+
+                        <div class="card-top">
+                            <div class="card-title">
+                                📱 Bedrock Edition
+                            </div>
+
+                            <div class="card-label">
+                                Bedrock
+                            </div>
+                        </div>
+
+                        <div class="ip">
+                            amd-1.orvixcloud.site:19117
+                        </div>
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="copyBedrockIP()"
+                        >
+                            Copy Bedrock IP
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="home-section">
+
+            <div class="container">
+
+                <div class="section-label">
+                    WHY AETHER
+                </div>
+
+                <h2 class="section-title">
+                    Built for the community.
+                </h2>
+
+                <p class="section-description">
+                    A network designed around different ways to play,
+                    from peaceful progression to competitive PvP.
+                </p>
+
+
+                <div class="features-grid">
+
+                    <div class="card feature">
+                        <div class="feature-icon">🌐</div>
+                        <h3>Java + Bedrock</h3>
+                        <p>
+                            Play together across Java and Bedrock editions.
+                        </p>
+                    </div>
+
+
+                    <div class="card feature">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Low-Lag Gameplay</h3>
+                        <p>
+                            Optimized server performance for smooth gameplay.
+                        </p>
+                    </div>
+
+
+                    <div class="card feature">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>Protected Builds</h3>
+                        <p>
+                            Land Claim and grief protection help protect your progress.
+                        </p>
+                    </div>
+
+
+                    <div class="card feature">
+                        <div class="feature-icon">🎉</div>
+                        <h3>Community Events</h3>
+                        <p>
+                            PvP tournaments, Build Battles, Treasure Hunts and more.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="container">
+
+            <div class="cta">
+
+                <div class="section-label">
+                    READY?
+                </div>
+
+                <h2>
+                    Your story starts here.
+                </h2>
+
+                <p>
+                    Join AETHER SMP, choose your world,
+                    build your empire and make your mark.
+                </p>
+
+                <div class="cta-buttons">
+
+                    <a
+                        href="#explore"
+                        data-page="explore"
+                        class="btn btn-primary"
+                    >
+                        Explore Server
+                    </a>
+
+                    <a
+                        href="https://discord.gg/UguXaBtfP"
+                        target="_blank"
+                        class="btn btn-discord"
+                    >
+                        Join Discord
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =======================================================
+     EXPLORE PAGE
+======================================================= -->
+
+<div class="page" id="explorePage">
+
+    <main class="container">
+
+        <section class="page-header">
+
+            <a
+                href="#home"
+                data-page="home"
+                class="back-home"
+            >
+                ← Back Home
+            </a>
+
+            <div class="section-label">
+                EXPLORE SERVER
+            </div>
+
+            <h1 class="section-title">
+                Choose your world.
+            </h1>
+
+            <p class="section-description">
+                Every mode has its own gameplay, challenges and rules.
+                Pick your experience and start your adventure.
+            </p>
+
+        </section>
+
+
+        <section class="modes">
+
+
+            <!-- SURVIVAL -->
+
+            <div class="mode active">
+
+                <button
+                    class="mode-button"
+                    onclick="toggleMode(this)"
+                >
+
+                    <div class="mode-icon">
+                        🌲
+                    </div>
+
+                    <div class="mode-info">
+                        <strong>Survival</strong>
+                        <span>
+                            Classic survival • Economy • Land Claim
+                        </span>
+                    </div>
+
+                    <div class="mode-arrow">
+                        ⌄
+                    </div>
+
+                </button>
+
+
+                <div class="mode-content">
+
+                    <div class="detail-grid">
+
+                        <div class="detail">
+
+                            <h4>
+                                Gameplay
+                            </h4>
+
+                            <p>
+                                Start from nothing, gather resources,
+                                build your base, trade with players and
+                                create your own empire.
+                            </p>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Features
+                            </h4>
+
+                            <ul>
+                                <li>Land Claim</li>
+                                <li>Economy</li>
+                                <li>Ranks</li>
+                                <li>Grief Protection</li>
+                                <li>Java + Bedrock</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Rules
+                            </h4>
+
+                            <ul>
+                                <li>No griefing</li>
+                                <li>No cheating</li>
+                                <li>No exploiting bugs</li>
+                                <li>Respect other players</li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- LIFESTEAL -->
+
+            <div class="mode">
+
+                <button
+                    class="mode-button"
+                    onclick="toggleMode(this)"
+                >
+
+                    <div class="mode-icon">
+                        ♥
+                    </div>
+
+                    <div class="mode-info">
+                        <strong>Lifesteal</strong>
+                        <span>
+                            Fight • Steal Hearts • Survive
+                        </span>
+                    </div>
+
+                    <div class="mode-arrow">
+                        ⌄
+                    </div>
+
+                </button>
+
+
+                <div class="mode-content">
+
+                    <div class="detail-grid">
+
+                        <div class="detail">
+
+                            <h4>
+                                Gameplay
+                            </h4>
+
+                            <p>
+                                Every fight matters. Defeat enemies,
+                                gain hearts and become one of the
+                                strongest players on the server.
+                            </p>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Features
+                            </h4>
+
+                            <ul>
+                                <li>Heart Stealing</li>
+                                <li>PvP Battles</li>
+                                <li>Teams & Alliances</li>
+                                <li>Events</li>
+                                <li>Competitive Gameplay</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Rules
+                            </h4>
+
+                            <ul>
+                                <li>No hacking</li>
+                                <li>No combat exploits</li>
+                                <li>No harassment</li>
+                                <li>Follow event rules</li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PVP -->
+
+            <div class="mode">
+
+                <button
+                    class="mode-button"
+                    onclick="toggleMode(this)"
+                >
+
+                    <div class="mode-icon">
+                        ⚔
+                    </div>
+
+                    <div class="mode-info">
+                        <strong>PvP</strong>
+                        <span>
+                            Competitive combat • Skill • Strategy
+                        </span>
+                    </div>
+
+                    <div class="mode-arrow">
+                        ⌄
+                    </div>
+
+                </button>
+
+
+                <div class="mode-content">
+
+                    <div class="detail-grid">
+
+                        <div class="detail">
+
+                            <h4>
+                                Gameplay
+                            </h4>
+
+                            <p>
+                                Test your combat skills against other
+                                players. Master movement, timing and
+                                your equipment.
+                            </p>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Features
+                            </h4>
+
+                            <ul>
+                                <li>Arenas</li>
+                                <li>Combat Events</li>
+                                <li>Competitive Battles</li>
+                                <li>Custom Loadouts</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Rules
+                            </h4>
+
+                            <ul>
+                                <li>No hacks</li>
+                                <li>No unfair exploits</li>
+                                <li>No combat logging</li>
+                                <li>Respect opponents</li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ONEBLOCK -->
+
+            <div class="mode">
+
+                <button
+                    class="mode-button"
+                    onclick="toggleMode(this)"
+                >
+
+                    <div class="mode-icon">
+                        ◆
+                    </div>
+
+                    <div class="mode-info">
+                        <strong>OneBlock</strong>
+                        <span>
+                            One block • Infinite progression
+                        </span>
+                    </div>
+
+                    <div class="mode-arrow">
+                        ⌄
+                    </div>
+
+                </button>
+
+
+                <div class="mode-content">
+
+                    <div class="detail-grid">
+
+                        <div class="detail">
+
+                            <h4>
+                                Gameplay
+                            </h4>
+
+                            <p>
+                                Begin with a single block and keep mining.
+                                Progress through different phases and
+                                turn nothing into everything.
+                            </p>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Features
+                            </h4>
+
+                            <ul>
+                                <li>Progressive Phases</li>
+                                <li>Island Building</li>
+                                <li>Challenges</li>
+                                <li>Resource Progression</li>
+                                <li>Player Competition</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Rules
+                            </h4>
+
+                            <ul>
+                                <li>No duplication exploits</li>
+                                <li>No hacks</li>
+                                <li>No abuse of bugs</li>
+                                <li>Respect other islands</li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MINI GAMES -->
+
+            <div class="mode">
+
+                <button
+                    class="mode-button"
+                    onclick="toggleMode(this)"
+                >
+
+                    <div class="mode-icon">
+                        🎮
+                    </div>
+
+                    <div class="mode-info">
+                        <strong>Mini Games</strong>
+                        <span>
+                            TNT Run • Bed Wars • Events
+                        </span>
+                    </div>
+
+                    <div class="mode-arrow">
+                        ⌄
+                    </div>
+
+                </button>
+
+
+                <div class="mode-content">
+
+                    <div class="detail-grid">
+
+                        <div class="detail">
+
+                            <h4>
+                                Gameplay
+                            </h4>
+
+                            <p>
+                                Take a break from survival and jump into
+                                fast-paced mini games with friends
+                                and competitors.
+                            </p>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Games
+                            </h4>
+
+                            <ul>
+                                <li>TNT Run</li>
+                                <li>Bed Wars</li>
+                                <li>Build Battle</li>
+                                <li>Treasure Hunt</li>
+                                <li>PvP Tournament</li>
+                            </ul>
+
+                        </div>
+
+
+                        <div class="detail">
+
+                            <h4>
+                                Rules
+                            </h4>
+
+                            <ul>
+                                <li>No cheating</li>
+                                <li>No exploiting</li>
+                                <li>No teaming where prohibited</li>
+                                <li>Play fair</li>
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="server-info">
+
+                <div class="server-info-item">
+                    <small>
+                        SUPPORTED VERSION
+                    </small>
+
+                    <code>
+                        26.2+
+                    </code>
+                </div>
+
+
+                <div class="server-info-item">
+                    <small>
+                        JAVA SERVER
+                    </small>
+
+                    <code>
+                        amd-1.orvixcloud.site
+                    </code>
+                </div>
+
+
+                <div class="server-info-item">
+                    <small>
+                        BEDROCK SERVER
+                    </small>
+
+                    <code>
+                        amd-1.orvixcloud.site:19117
+                    </code>
+                </div>
+
+
+                <button
+                    class="btn btn-primary"
+                    onclick="copyJavaIP()"
+                >
+                    Copy Java IP
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =======================================================
+     STORE PAGE
+======================================================= -->
+
+<div class="page" id="storePage">
+
+    <main class="container">
+
+        <section class="page-header">
+
+            <a
+                href="#home"
+                data-page="home"
+                class="back-home"
+            >
+                ← Back Home
+            </a>
+
+            <div class="store-head">
+
+                <div class="section-label">
+                    AETHER STORE
+                </div>
+
+                <h1 class="section-title">
+                    Upgrade your journey.
+                </h1>
+
+                <p class="section-description">
+                    Choose a seasonal rank and unlock exclusive
+                    items, commands and perks.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <section class="store-grid">
+
+
+            <!-- PRIME -->
+
+            <article class="rank">
+
+                <div class="rank-name">
+                    PRIME
+                </div>
+
+                <div class="rank-tier">
+                    Starter
+                </div>
+
+                <div class="price">
+                    ৳120
+                    <span>/ season</span>
+                </div>
+
+
+                <ul class="perks">
+
+                    <li>
+                        In-game Money: 500K
+                    </li>
+
+                    <li>
+                        Max Armor & Tools (Vanilla Max)
+                    </li>
+
+                    <li>
+                        8 Shulker Boxes
+                    </li>
+
+                    <li>
+                        90 Golden Apple + 12 Enchanted Golden Apple
+                    </li>
+
+                    <li>
+                        20K Claim Blocks
+                    </li>
+
+                </ul>
+
+
+                <div class="commands">
+
+                    <div class="commands-title">
+                        Commands
+                    </div>
+
+                    <div class="command-list">
+                        /back<br>
+                        /ptime<br>
+                        /disposal<br>
+                        /near<br>
+                        /hat
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="https://discord.gg/UguXaBtfP"
+                    target="_blank"
+                    class="btn btn-secondary buy"
+                >
+                    Purchase via Discord
+                </a>
+
+            </article>
+
+
+            <!-- LEGEND -->
+
+            <article class="rank">
+
+                <div class="rank-name">
+                    LEGEND
+                </div>
+
+                <div class="rank-tier">
+                    Mid-Tier
+                </div>
+
+                <div class="price">
+                    ৳180
+                    <span>/ season</span>
+                </div>
+
+
+                <ul class="perks">
+
+                    <li>
+                        In-game Money: 750K
+                    </li>
+
+                    <li>
+                        Full Max + Custom Gear (Limited)
+                    </li>
+
+                    <li>
+                        Full Max Custom Sword
+                    </li>
+
+                    <li>
+                        12 Shulker Boxes
+                    </li>
+
+                    <li>
+                        160 Golden Apple + 32 Enchanted Golden Apple
+                    </li>
+
+                    <li>
+                        30K Claim Blocks
+                    </li>
+
+                </ul>
+
+
+                <div class="commands">
+
+                    <div class="commands-title">
+                        Commands
+                    </div>
+
+                    <div class="command-list">
+                        All Prime Commands<br>
+                        /workbench<br>
+                        /echest<br>
+                        /feed<br>
+                        /nick<br>
+                        /smithingtable<br>
+                        /cartographytable<br>
+                        /loom
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="https://discord.gg/UguXaBtfP"
+                    target="_blank"
+                    class="btn btn-secondary buy"
+                >
+                    Purchase via Discord
+                </a>
+
+            </article>
+
+
+            <!-- ELITE -->
+
+            <article class="rank popular">
+
+                <div class="popular-tag">
+                    MOST POPULAR
+                </div>
+
+                <div class="rank-name">
+                    ELITE
+                </div>
+
+                <div class="rank-tier">
+                    Best Value
+                </div>
+
+                <div class="price">
+                    ৳240
+                    <span>/ season</span>
+                </div>
+
+
+                <ul class="perks">
+
+                    <li>
+                        In-game Money: 1M
+                    </li>
+
+                    <li>
+                        1 Elytra
+                    </li>
+
+                    <li>
+                        Max Mace ×1
+                    </li>
+
+                    <li>
+                        3×3 Custom Pickaxe
+                    </li>
+
+                    <li>
+                        Full Max-Custom Gear
+                    </li>
+
+                    <li>
+                        15 Shulker Boxes
+                    </li>
+
+                    <li>
+                        256 Golden Apple + 48 Enchanted Golden Apple
+                    </li>
+
+                    <li>
+                        40K Claim Blocks
+                    </li>
+
+                </ul>
+
+
+                <div class="commands">
+
+                    <div class="commands-title">
+                        Commands
+                    </div>
+
+                    <div class="command-list">
+                        All Legend Commands<br>
+                        /heal<br>
+                        /ext<br>
+                        /ptime night<br>
+                        /anvil
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="https://discord.gg/UguXaBtfP"
+                    target="_blank"
+                    class="btn btn-primary buy"
+                >
+                    Purchase via Discord
+                </a>
+
+            </article>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- =======================================================
+     SIGN IN PAGE
+======================================================= -->
+
+<div class="page" id="signinPage">
+
+    <main class="container auth-page">
+
+        <div class="auth-box">
+
+            <h1>
+                Create Account
+            </h1>
+
+            <p class="auth-subtitle">
+                Create your AETHER account and keep your
+                website profile ready for future features.
+            </p>
+
+
+            <form id="signupForm">
+
+                <div class="form-group">
+
+                    <label>
+                        Username
+                    </label>
+
+                    <input
+                        type="text"
+                        id="signupUsername"
+                        placeholder="Enter username"
+                        minlength="3"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="signupEmail"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="signupPassword"
+                        placeholder="Create a password"
+                        minlength="6"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary auth-submit"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <div class="auth-switch">
+
+                Already have an account?
+
+                <button
+                    onclick="navigate('login')"
+                >
+                    Login
+                </button>
+
+            </div>
+
+
+            <div class="auth-note">
+                Demo account system for GitHub Pages.
+                Do not use a real password here.
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =======================================================
+     LOGIN PAGE
+======================================================= -->
+
+<div class="page" id="loginPage">
+
+    <main class="container auth-page">
+
+        <div class="auth-box">
+
+            <h1>
+                Welcome Back
+            </h1>
+
+            <p class="auth-subtitle">
+                Login to your AETHER website account.
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="loginEmail"
+                        placeholder="you@example.com"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="loginPassword"
+                        placeholder="Your password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="btn btn-primary auth-submit"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <div class="auth-switch">
+
+                Don't have an account?
+
+                <button
+                    onclick="navigate('signin')"
+                >
+                    Sign In
+                </button>
+
+            </div>
+
+
+            <div class="auth-note">
+                Your demo account is stored locally in this browser.
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<!-- =======================================================
+     FOOTER
+======================================================= -->
+
+<footer>
+
+    <div class="footer-logo">
+        AETHER SMP
+    </div>
+
+    <p>
+        © 2026 AETHER SMP<br>
+        Build • Explore • Fight • Win 💚
+    </p>
+
+    <p style="margin-top:7px;">
+        Developed by <strong>NH Plays</strong>
+    </p>
+
+</footer>
+
+
+<!-- =======================================================
+     TOAST
+======================================================= -->
+
+<div
+    class="toast"
+    id="toast"
+></div>
+
+
+<script>
+
+/* =========================================================
+   SERVER INFORMATION
+========================================================= */
+
+const JAVA_IP = "amd-1.orvixcloud.site";
+
+const BEDROCK_IP = "amd-1.orvixcloud.site:19117";
+
+const DISCORD_URL = "https://discord.gg/UguXaBtfP";
+
+
+/* =========================================================
+   SUPABASE CONFIGURATION
+========================================================= */
+
+const SUPABASE_URL = "https://cojwrqbvozjmletuhugq.supabase.co";
+
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNvandycWJ2b3pqbWxldHVodWdxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3OTIzODEsImV4cCI6MjEwNjM2ODM4MX0.O68sNPEA064inw_ZoEOQFkWUNL-Wj9kb2qD91o9a30E";
+
+const { createClient } = window.supabase;
+
+const supabaseClient = createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+
+/* =========================================================
+   PAGE NAVIGATION
+========================================================= */
+
+const pages = [
+    "home",
+    "explore",
+    "store",
+    "signin",
+    "login"
+];
+
+
+function navigate(page){
+
+    if(!pages.includes(page)){
+        page = "home";
+    }
+
+    document.querySelectorAll(".page").forEach(el => {
+        el.classList.remove("active");
+    });
+
+    const target = document.getElementById(page + "Page");
+
+    if(target){
+        target.classList.add("active");
+    }
+
+    document.querySelectorAll("[data-page]").forEach(link => {
+        link.classList.remove("active");
+    });
+
+    document.querySelectorAll(`[data-page="${page}"]`).forEach(link => {
+        link.classList.add("active");
+    });
+
+    document.getElementById("navLinks").classList.remove("open");
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+    if(location.hash !== "#" + page){
+        history.pushState(null, "", "#" + page);
+    }
+}
+
+
+function loadPageFromHash(){
+    let page = location.hash.replace("#","");
+
+    if(!pages.includes(page)){
+        page = "home";
+    }
+
+    navigateWithoutHistory(page);
+}
+
+
+function navigateWithoutHistory(page){
+    document.querySelectorAll(".page").forEach(el => {
+        el.classList.remove("active");
+    });
+
+    const target = document.getElementById(page + "Page");
+
+    if(target){
+        target.classList.add("active");
+    }
+
+    document.getElementById("navLinks").classList.remove("open");
+
+    window.scrollTo(0,0);
+}
+
+
+document.querySelectorAll("[data-page]").forEach(link => {
+    link.addEventListener("click",function(e){
+        e.preventDefault();
+        navigate(this.dataset.page);
+    });
+});
+
+
+window.addEventListener("popstate",loadPageFromHash);
+window.addEventListener("hashchange",loadPageFromHash);
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+function toggleMenu(){
+    document.getElementById("navLinks").classList.toggle("open");
+}
+
+
+/* =========================================================
+   COPY FUNCTIONS
+========================================================= */
+
+function copyText(text,message){
+
+    if(navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(text).then(() => showToast(message));
+        return;
+    }
+
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.style.position = "fixed";
+    textarea.style.left = "-9999px";
+
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    textarea.remove();
+
+    showToast(message);
+}
+
+
+function copyJavaIP(){
+    copyText(JAVA_IP, "Java IP copied!");
+}
+
+
+function copyBedrockIP(){
+    copyText(BEDROCK_IP, "Bedrock IP copied!");
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(message){
+
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
+}
+
+
+/* =========================================================
+   EXPLORE ACCORDION
+========================================================= */
+
+function toggleMode(button){
+
+    const mode = button.closest(".mode");
+    const active = mode.classList.contains("active");
+
+    document.querySelectorAll(".mode").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    if(!active){
+        mode.classList.add("active");
+    }
+}
+
+
+/* =========================================================
+   SUPABASE AUTH HELPERS
+========================================================= */
+
+function getUsername(user){
+    if(!user) return "Player";
+
+    return (
+        user.user_metadata?.username ||
+        user.email?.split("@")[0] ||
+        "Player"
+    );
+}
+
+
+function updateAuthUI(user){
+
+    const authLinks = document.getElementById("authLinks");
+    const userPill = document.getElementById("userPill");
+    const userName = document.getElementById("userName");
+
+    if(user){
+        authLinks.style.display = "none";
+        userPill.classList.add("visible");
+        userName.textContent = getUsername(user);
+    }else{
+        authLinks.style.display = "flex";
+        userPill.classList.remove("visible");
+    }
+}
+
+
+/* =========================================================
+   SIGN UP
+========================================================= */
+
+document.getElementById("signupForm").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const username = document.getElementById("signupUsername").value.trim();
+    const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+    const password = document.getElementById("signupPassword").value;
+
+    if(username.length < 3){
+        showToast("Username must be at least 3 characters.");
+        return;
+    }
+
+    if(password.length < 6){
+        showToast("Password must be at least 6 characters.");
+        return;
+    }
+
+    const button = document.querySelector("#signupForm .auth-submit");
+    button.disabled = true;
+    button.textContent = "Creating Account...";
+
+    try{
+        const { data, error } = await supabaseClient.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: { username: username },
+                emailRedirectTo: window.location.origin + window.location.pathname
+            }
+        });
+
+        if(error){
+            const message = error.message.toLowerCase();
+            if(message.includes("already registered")){
+                showToast("This email is already registered.");
+            }else{
+                showToast(error.message);
+            }
+            return;
+        }
+
+        document.getElementById("signupForm").reset();
+
+        if(data.session){
+            updateAuthUI(data.session.user);
+            showToast("Account created successfully!");
+            setTimeout(() => navigate("home"), 700);
+        }else{
+            showToast("Account created! Check your email to confirm it.");
+        }
+
+    }catch(error){
+        showToast("Something went wrong. Please try again.");
+    }finally{
+        button.disabled = false;
+        button.textContent = "Create Account";
+    }
+});
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+document.getElementById("loginForm").addEventListener("submit", async function(e){
+
+    e.preventDefault();
+
+    const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+    const password = document.getElementById("loginPassword").value;
+
+    const button = document.querySelector("#loginForm .auth-submit");
+    button.disabled = true;
+    button.textContent = "Logging In...";
+
+    try{
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
+
+        if(error){
+            const message = error.message.toLowerCase();
+            if(message.includes("email not confirmed")){
+                showToast("Please confirm your email first.");
+            }else{
+                showToast("Incorrect email or password.");
+            }
+            return;
+        }
+
+        if(data.user){
+            updateAuthUI(data.user);
+            showToast("Login successful!");
+            document.getElementById("loginForm").reset();
+            setTimeout(() => navigate("home"), 700);
+        }
+
+    }catch(error){
+        showToast("Something went wrong. Please try again.");
+    }finally{
+        button.disabled = false;
+        button.textContent = "Login";
+    }
+});
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+    const { error } = await supabaseClient.auth.signOut();
+
+    if(error){
+        showToast("Could not logout. Please try again.");
+        return;
+    }
+
+    updateAuthUI(null);
+    showToast("You have been logged out.");
+    navigate("home");
+}
+
+
+/* =========================================================
+   AUTH SESSION
+========================================================= */
+
+async function initializeAuth(){
+
+    const { data, error } = await supabaseClient.auth.getSession();
+
+    if(error){
+        console.error("Supabase session error:", error);
+        updateAuthUI(null);
+        return;
+    }
+
+    updateAuthUI(data?.session?.user || null);
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => {
+        updateAuthUI(session?.user || null);
+    });
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+initializeAuth();
+
+if(location.hash){
+    loadPageFromHash();
+}else{
+    navigateWithoutHistory("home");
+}
+
+</script>
+
+</body>
+</html>
